@@ -15,11 +15,15 @@ exports.createPost = async (req, res) => {
   const { title, content, category } = req.body;
 
   try {
+    // generate next postId by finding the max current one
+    const lastPost = await Post.findOne({ order: [['postId', 'DESC']] });
+    const nextPostId = lastPost ? lastPost.postId + 1 : 1;
+
     const post = await Post.create({
       title,
       content,
       category,
-      userId: req.user.id
+      postId: nextPostId
     });
     res.status(201).json(post);
   } catch (err) {

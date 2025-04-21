@@ -1,5 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
     const Post = sequelize.define('Post', {
+      postId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: true 
+      },
+
       title: {
         type: DataTypes.STRING,
         allowNull: false
@@ -11,22 +17,12 @@ module.exports = (sequelize, DataTypes) => {
       category: {
         type: DataTypes.STRING,
         allowNull: true
-      },
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
       }
+      
     }, {
-      timestamps: true // Enable timestamps for createdAt and updatedAt
+      timestamps: true // Enable timestamps (createdAt and updatedAt)
     });
   
-    Post.associate = (models) => {
-      Post.belongsTo(models.User, {
-        foreignKey: 'userId',
-        as: 'author',
-        onDelete: 'CASCADE'
-      });
-    };
   
     return Post;
   };
