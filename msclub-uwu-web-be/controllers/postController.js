@@ -1,4 +1,5 @@
-const { Post } = require('../models/Post');
+const { Post } = require('../models');
+require('dotenv').config();
 
 // GET all posts
 exports.getAllPosts = async (req, res) => {
@@ -6,6 +7,7 @@ exports.getAllPosts = async (req, res) => {
     const posts = await Post.findAll();
     res.json(posts);
   } catch (err) {
+    console.error('Error fetching posts:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -27,6 +29,7 @@ exports.createPost = async (req, res) => {
     });
     res.status(201).json(post);
   } catch (err) {
+    console.error('Error creating post:', err);
     res.status(500).json({ message: 'Error creating post' });
   }
 };
@@ -47,6 +50,7 @@ exports.updatePost = async (req, res) => {
 
     res.json(post);
   } catch (err) {
+    console.error('Error updating post:', err);
     res.status(500).json({ message: 'Error updating post' });
   }
 };
@@ -62,6 +66,7 @@ exports.deletePost = async (req, res) => {
     await post.destroy();
     res.json({ message: 'Post deleted' });
   } catch (err) {
+    console.error('Error deleting post:', err);
     res.status(500).json({ message: 'Error deleting post' });
   }
 };
