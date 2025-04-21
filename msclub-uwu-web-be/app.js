@@ -1,17 +1,20 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+
 const { sequelize } = require('./models');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
 
-//Middlewares
+const blogRoutes = require('./routes/blogRoutes');
+
 app.use(cors());
 app.use(express.json());
 
 //Routes
 app.use('/api/admin', adminRoutes);
+app.use('/api/blogs', blogRoutes);
 
 
 app.use((err,req,res,next)=>{
@@ -23,8 +26,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-
 
 sequelize.sync({ alter: true }) 
   .then(() => {
