@@ -1,5 +1,6 @@
 const {Event} = require('../models');
 require('dotenv').config();
+const cloudinary = require('../config/cloudinary');
 
 exports.getAllEvents = async (req, res) => {
     try{
@@ -67,6 +68,13 @@ exports.deleteEvent = async (req, res) => {
         const event = await Event.findByPk(id);
         if (!event) return res.status(404).json({ message: 'Event not found' });
 
+        const imageUrl = event.eventImage;
+        const publicId = extractPublicIdFromUrl(imageUrl);
+
+        if(publicId) {
+            await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+        }
+
         await event.destroy();
         res.json({ message: 'Event deleted successfully' });
     } catch (err) {
@@ -89,4 +97,9 @@ exports.getEventById = async (req, res) => {
     }
 };
 
-
+function extractPublicIdFromUrl(url) {
+    if (!url) return null;
+    
+    const matches = url.match(/\/upload\/[^/]+\/(.+)/);
+    return matches ? matches[1].split('.')[0] : null;
+}
