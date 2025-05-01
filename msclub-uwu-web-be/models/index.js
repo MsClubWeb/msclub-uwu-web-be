@@ -8,5 +8,6 @@ db.sequelize = sequelize;
 
 db.Admin = require('./Admin')(sequelize, Sequelize.DataTypes);
 db.Post = require('./Post')(sequelize, Sequelize.DataTypes);
+db.Event = require('./Event')(sequelize, Sequelize.DataTypes);
 
 module.exports = db;
