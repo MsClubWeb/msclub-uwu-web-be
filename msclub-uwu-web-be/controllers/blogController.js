@@ -1,5 +1,6 @@
 const { Post } = require('../models');
 require('dotenv').config();
+const cloudinary = require('../config/cloudinary');
 
 // GET all posts
 exports.getAllPosts = async (req, res) => {
@@ -18,18 +19,21 @@ exports.createPost = async (req, res) => {
     category,
     title,
     bannerDescription,
-    bannerImage,
     date,
     authorName,
     description
   } = req.body;
+
+  if (!req.file) {
+    return res.status(400).json({ message: 'No banner image uploaded' });
+  }
 
   try {
     const post = await Post.create({
       category,
       title,
       bannerDescription,
-      bannerImage,
+      bannerImage: req.file.path,
       date,
       authorName,
       description
@@ -48,7 +52,6 @@ exports.updatePost = async (req, res) => {
     category,
     title,
     bannerDescription,
-    bannerImage,
     date,
     authorName,
     description
@@ -61,13 +64,21 @@ exports.updatePost = async (req, res) => {
     post.category = category;
     post.title = title;
     post.bannerDescription = bannerDescription;
-    post.bannerImage = bannerImage;
     post.date = date;
     post.authorName = authorName;
     post.description = description;
 
-    await post.save();
+    if (req.file) {
+      // delete old image from cloudinary
+      const publicId = extractPublicIdFromUrl(post.bannerImage);
+      if (publicId) {
+        await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+      }
 
+      post.bannerImage = req.file.path;
+    }
+
+    await post.save();
     res.json(post);
   } catch (err) {
     console.error('Error updating post:', err);
@@ -83,10 +94,24 @@ exports.deletePost = async (req, res) => {
     const post = await Post.findByPk(id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
+    const imageUrl = post.bannerImage;
+    const publicId = extractPublicIdFromUrl(imageUrl);
+
+    if (publicId) {
+      await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+    }
+
     await post.destroy();
-    res.json({ message: 'Post deleted' });
+    res.json({ message: 'Post deleted successfully' });
   } catch (err) {
     console.error('Error deleting post:', err);
     res.status(500).json({ message: 'Error deleting post' });
   }
 };
+
+// Helper function to extract Cloudinary public ID
+function extractPublicIdFromUrl(url) {
+  if (!url) return null;
+  const matches = url.match(/\/upload\/[^/]+\/(.+)/);
+  return matches ? matches[1].split('.')[0] : null;
+}
