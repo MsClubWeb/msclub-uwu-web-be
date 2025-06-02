@@ -1,29 +1,36 @@
 module.exports = (sequelize, DataTypes) => {
-    const Post = sequelize.define('Post', {
-      postId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true 
-      },
+  const Post = sequelize.define('Post', {
+    category: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    bannerDescription: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    bannerImage: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    date: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    authorName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    }
+  }, {
+    timestamps: true // createdAt and updatedAt fields
+  });
 
-      title: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      content: {
-        type: DataTypes.TEXT,
-        allowNull: false
-      },
-      category: {
-        type: DataTypes.STRING,
-        allowNull: true
-      }
-      
-    }, {
-      timestamps: true // Enable timestamps (createdAt and updatedAt)
-    });
-  
-  
-    return Post;
-  };
-  
+  return Post;
+};
