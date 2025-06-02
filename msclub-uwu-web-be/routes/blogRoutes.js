@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const postController = require('../controllers/postController');
+const blogController = require('../controllers/blogController');
 const auth = require('../middlewares/auth');
+const upload = require('../middlewares/upload');
 
-router.get('/', postController.getAllPosts);
+router.get('/', blogController.getAllPosts);
 
-router.post('/', auth, postController.createPost);
-router.put('/:id', auth, postController.updatePost);
-router.delete('/:id', auth, postController.deletePost);
+router.post('/', auth,upload('blogs').single('bannerImage') ,blogController.createPost);
+router.put('/:id', auth,auth,upload('blogs').single('bannerImage'), blogController.updatePost);
+router.delete('/:id', auth, blogController.deletePost);
 
 module.exports = router;
